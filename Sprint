@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrossel de Imagens</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .carousel-container {
+            width: 100%;
+            max-width: 800px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .carousel-images {
+            display: flex;
+            transition: transform 0.8s ease-in-out; /* Transição suave */
+        }
+
+        .carousel-images img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .prev, .next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 50%;
+            font-size: 20px;
+            transition: background-color 0.3s;
+            z-index: 1000;
+        }
+
+        .prev:hover, .next:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .prev {
+            left: 15px;
+        }
+
+        .next {
+            right: 15px;
+        }
+
+        /* Indicadores do carrossel */
+        .carousel-indicators {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .carousel-indicators button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .carousel-indicators button.active {
+            background-color: rgba(255, 255, 255, 1);
+        }
+
+        .carousel-indicators button:hover {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Tornar responsivo */
+        @media (max-width: 768px) {
+            .prev, .next {
+                padding: 10px;
+                font-size: 16px;
+            }
+
+            .carousel-indicators button {
+                width: 10px;
+                height: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="carousel-container">
+        <div class="carousel-images">
+            <img src="https://via.placeholder.com/800x400/FF5733/FFFFFF?text=Imagem+1" alt="Imagem 1">
+            <img src="https://via.placeholder.com/800x400/33C1FF/FFFFFF?text=Imagem+2" alt="Imagem 2">
+            <img src="https://via.placeholder.com/800x400/28B463/FFFFFF?text=Imagem+3" alt="Imagem 3">
+        </div>
+
+        <!-- Botões de navegação -->
+        <button class="prev" onclick="prevSlide()">&#10094;</button>
+        <button class="next" onclick="nextSlide()">&#10095;</button>
+
+        <!-- Indicadores -->
+        <div class="carousel-indicators">
+            <button class="active" onclick="showSlide(0)"></button>
+            <button onclick="showSlide(1)"></button>
+            <button onclick="showSlide(2)"></button>
+        </div>
+    </div>
+
+    <script>
+        let currentIndex = 0;
+        const slides = document.querySelector('.carousel-images');
+        const totalSlides = slides.children.length;
+        const indicators = document.querySelectorAll('.carousel-indicators button');
+        let autoSlideInterval;
+
+        function showSlide(index) {
+            if (index >= totalSlides) {
+                currentIndex = 0;
+            } else if (index < 0) {
+                currentIndex = totalSlides - 1;
+            } else {
+                currentIndex = index;
+            }
+
+            const offset = -currentIndex * 100;
+            slides.style.transform = `translateX(${offset}%)`;
+
+            // Atualizar os indicadores
+            indicators.forEach((button, i) => {
+                button.classList.toggle('active', i === currentIndex);
+            });
+        }
+
+        function nextSlide() {
+            showSlide(currentIndex + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentIndex - 1);
+        }
+
+        // Função para rotação automática
+        function autoSlide() {
+            autoSlideInterval = setInterval(() => {
+                nextSlide();
+            }, 5000); // Muda a cada 5 segundos
+        }
+
+        // Pausar rotação automática ao interagir
+        function pauseAutoSlide() {
+            clearInterval(autoSlideInterval);
+        }
+
+        // Iniciar rotação automática quando a página carregar
+        window.onload = function() {
+            autoSlide();
+        };
+
+        // Reiniciar a rotação automática após interação
+        document.querySelector('.prev').addEventListener('click', () => {
+            pauseAutoSlide();
+            prevSlide();
+            autoSlide();
+        });
+
+        document.querySelector('.next').addEventListener('click', () => {
+            pauseAutoSlide();
+            nextSlide();
+            autoSlide();
+        });
+
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                pauseAutoSlide();
+                showSlide(index);
+                autoSlide();
+            });
+        });
+    </script>
+
+</body>
+</html>
